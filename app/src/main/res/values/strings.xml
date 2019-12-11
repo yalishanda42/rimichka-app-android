@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">Rimichka</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="app_name">Римичка</string>
+    <string name="title_search">Римички</string>
+    <string name="title_favorites">Любимички</string>
 </resources>
