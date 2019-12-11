@@ -2,4 +2,6 @@
     <string name="app_name">Римичка</string>
     <string name="title_search">Римички</string>
     <string name="title_favorites">Любимички</string>
+    <string name="search_hint">Въведи дума на кирилица...</string>
+    <string name="search_button_text">Римувай ме!</string>
 </resources>
