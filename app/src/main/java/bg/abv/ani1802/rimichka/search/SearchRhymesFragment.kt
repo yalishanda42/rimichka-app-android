@@ -49,7 +49,12 @@ class SearchRhymesFragment : Fragment() {
             override fun afterTextChanged(p0: Editable?) {
             }
 
-            override fun onTextChanged(newSearchedWord: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                newSearchedWord: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 newSearchedWord?.let { newWord ->
                     lastSearchedWord?.let { oldWord ->
                         if (oldWord == newWord) {
@@ -63,6 +68,8 @@ class SearchRhymesFragment : Fragment() {
                 }
             }
         })
+
+        searchButton.setOnClickListener { v: View -> searchWordForRhymes(v) }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -71,7 +78,7 @@ class SearchRhymesFragment : Fragment() {
         // TODO: Use the ViewModel
     }
 
-    fun searchWordForRhymes(view: View) {
+    private fun searchWordForRhymes(view: View) {
         lastSearchedWord = searchBar.text.toString()
         // TODO: Ask the ViewModel to fetch rhymes
         // TODO: Update UI
