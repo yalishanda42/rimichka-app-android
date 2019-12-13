@@ -19,7 +19,7 @@ class SearchRhymesViewModel : ViewModel() {
         RimichkaApi.retrofitService.fetchRhymes(word).enqueue(
             object : Callback<List<Rhyme>> {
                 override fun onFailure(call: Call<List<Rhyme>>, t: Throwable) {
-                    Log.d(this::class.java.toString(), "Could not fetch rhymes (${t.message})")
+                    Log.e(this::class.java.toString(), "Could not fetch rhymes (${t.message})")
                     // TODO: Handle error
                 }
 
