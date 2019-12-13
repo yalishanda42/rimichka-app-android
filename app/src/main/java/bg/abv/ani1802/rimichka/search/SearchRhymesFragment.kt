@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -42,6 +43,7 @@ class SearchRhymesFragment : Fragment() {
         searchBar = view.findViewById(R.id.search_edit_text)
         searchButton = view.findViewById(R.id.search_button)
 
+        searchButton.setOnClickListener { _ -> searchWordForRhymes() }
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
@@ -68,20 +70,18 @@ class SearchRhymesFragment : Fragment() {
                 }
             }
         })
-
-        searchButton.setOnClickListener { v: View -> searchWordForRhymes(v) }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(SearchRhymesViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
-    private fun searchWordForRhymes(view: View) {
-        lastSearchedWord = searchBar.text.toString()
-        // TODO: Ask the ViewModel to fetch rhymes
-        // TODO: Update UI
+    private fun searchWordForRhymes() {
+        searchBar.text?.toString()?.let { searchWord ->
+            lastSearchedWord = searchWord
+            viewModel.fetchRhymesFor(searchWord)
+        }
     }
 
 }
