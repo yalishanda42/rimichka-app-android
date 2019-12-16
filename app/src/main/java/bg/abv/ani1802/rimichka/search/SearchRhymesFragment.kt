@@ -1,21 +1,20 @@
 package bg.abv.ani1802.rimichka.search
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import bg.abv.ani1802.rimichka.R
 import bg.abv.ani1802.rimichka.common.RhymesRecyclerViewAdapter
+import bg.abv.ani1802.rimichka.databinding.SearchRhymesFragmentBinding
 
 class SearchRhymesFragment : Fragment() {
 
@@ -23,6 +22,7 @@ class SearchRhymesFragment : Fragment() {
         fun newInstance() = SearchRhymesFragment()
     }
 
+    private lateinit var binding: SearchRhymesFragmentBinding
     private lateinit var viewModel: SearchRhymesViewModel
     private lateinit var searchBar: EditText
     private lateinit var searchButton: Button
@@ -35,18 +35,18 @@ class SearchRhymesFragment : Fragment() {
             recyclerView.layoutManager = LinearLayoutManager(context)
         }
 
-    private var lastSearchedWord: String? = null
-    private var searchButtonIsHidden: Boolean = true
-        set(value) {
-            field = value
-            searchButton.visibility = if (value) View.GONE else View.VISIBLE
-        }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.search_rhymes_fragment, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.search_rhymes_fragment,
+            container,
+            false
+        )
+        binding.lifecycleOwner = this
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,56 +54,19 @@ class SearchRhymesFragment : Fragment() {
         searchBar = view.findViewById(R.id.search_edit_text)
         searchButton = view.findViewById(R.id.search_button)
         recyclerView = view.findViewById(R.id.fetched_rhymes_recycler_view)
-
-        searchButton.setOnClickListener { _ -> searchWordForRhymes() }
-
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-            override fun onTextChanged(
-                newSearchedWord: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
-                newSearchedWord?.let { newWord ->
-                    lastSearchedWord?.let { oldWord ->
-                        if (oldWord == newWord) {
-                            searchButtonIsHidden = true
-                        }
-                    } ?: run {
-                        if (newSearchedWord != "" && searchButtonIsHidden) {
-                            searchButtonIsHidden = false
-                        }
-                    }
-                }
-            }
-        })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(SearchRhymesViewModel::class.java)
+        binding.viewModel = viewModel
         viewModel.rhymeViewModels.observe(this, Observer { rhymes ->
             context?.let { context ->
-                adapter =
-                    RhymesRecyclerViewAdapter(
-                        context,
-                        rhymes
-                    )
+                adapter = RhymesRecyclerViewAdapter(context, rhymes)
             }
         })
+        viewModel.searchQuery.observe(this, Observer {
+            viewModel.onSearchQueryChanged()
+        })
     }
-
-    private fun searchWordForRhymes() {
-        searchBar.text?.toString()?.let { searchWord ->
-            lastSearchedWord = searchWord
-            viewModel.fetchRhymesFor(searchWord)
-        }
-    }
-
 }
