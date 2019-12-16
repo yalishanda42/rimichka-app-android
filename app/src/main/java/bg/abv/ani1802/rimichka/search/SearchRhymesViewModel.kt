@@ -24,8 +24,8 @@ class SearchRhymesViewModel : ViewModel() {
                 }
 
                 override fun onResponse(call: Call<List<Rhyme>>, response: Response<List<Rhyme>>) {
-                    _rhymes.value = response.body()?.sortedByDescending {
-                            rhyme -> rhyme.precision
+                    _rhymes.value = response.body()?.sortedByDescending { rhyme ->
+                        rhyme.precision
                     }
                 }
 

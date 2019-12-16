@@ -11,8 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import bg.abv.ani1802.rimichka.R
+import bg.abv.ani1802.rimichka.network.Rhyme
 
 class SearchRhymesFragment : Fragment() {
 
@@ -23,10 +26,18 @@ class SearchRhymesFragment : Fragment() {
     private lateinit var viewModel: SearchRhymesViewModel
     private lateinit var searchBar: EditText
     private lateinit var searchButton: Button
+    private lateinit var recyclerView: RecyclerView
+
+    var adapter: SearchRhymesAdapter? = null
+        set(value) {
+            field = value
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(context)
+        }
 
     private var lastSearchedWord: String? = null
     private var searchButtonIsHidden: Boolean = true
-        set(value: Boolean) {
+        set(value) {
             field = value
             searchButton.visibility = if (value) View.GONE else View.VISIBLE
         }
@@ -42,8 +53,10 @@ class SearchRhymesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         searchBar = view.findViewById(R.id.search_edit_text)
         searchButton = view.findViewById(R.id.search_button)
+        recyclerView = view.findViewById(R.id.fetched_rhymes_recycler_view)
 
         searchButton.setOnClickListener { _ -> searchWordForRhymes() }
+
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
