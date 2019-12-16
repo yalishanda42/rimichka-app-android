@@ -1,11 +1,15 @@
 package bg.abv.ani1802.rimichka.search
 
+import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -54,6 +58,15 @@ class SearchRhymesFragment : Fragment() {
         searchBar = view.findViewById(R.id.search_edit_text)
         searchButton = view.findViewById(R.id.search_button)
         recyclerView = view.findViewById(R.id.fetched_rhymes_recycler_view)
+
+        searchButton.setOnClickListener { onTapSearchButton() }
+        searchBar.setOnKeyListener isHandled@ { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+                onTapSearchButton()
+                return@isHandled true
+            }
+            return@isHandled false
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -68,5 +81,17 @@ class SearchRhymesFragment : Fragment() {
         viewModel.searchQuery.observe(this, Observer {
             viewModel.onSearchQueryChanged()
         })
+    }
+
+    private fun onTapSearchButton() {
+        hideKeyboard()
+        searchBar.clearFocus()
+        viewModel.fetchRhymes()
+    }
+
+    private fun hideKeyboard() {
+        val context = context ?: return
+        val inputManager = getSystemService(context, InputMethodManager::class.java) ?: return
+        inputManager.hideSoftInputFromWindow(searchBar.windowToken, 0)
     }
 }
