@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -88,6 +89,11 @@ class SearchRhymesFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(SearchRhymesViewModel::class.java)
+        viewModel.rhymes.observe(this, Observer { rhymes ->
+            context?.let { context ->
+                adapter = SearchRhymesAdapter(context, rhymes)
+            }
+        })
     }
 
     private fun searchWordForRhymes() {

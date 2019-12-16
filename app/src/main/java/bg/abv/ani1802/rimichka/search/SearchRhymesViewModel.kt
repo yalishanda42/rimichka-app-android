@@ -28,7 +28,6 @@ class SearchRhymesViewModel : ViewModel() {
                         rhyme.precision
                     }
                 }
-
             }
         )
     }
