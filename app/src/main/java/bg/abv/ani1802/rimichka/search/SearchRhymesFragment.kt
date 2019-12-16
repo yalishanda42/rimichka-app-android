@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import bg.abv.ani1802.rimichka.R
-import bg.abv.ani1802.rimichka.network.Rhyme
+import bg.abv.ani1802.rimichka.common.RhymesRecyclerViewAdapter
 
 class SearchRhymesFragment : Fragment() {
 
@@ -29,7 +28,7 @@ class SearchRhymesFragment : Fragment() {
     private lateinit var searchButton: Button
     private lateinit var recyclerView: RecyclerView
 
-    var adapter: SearchRhymesAdapter? = null
+    private var adapter: RhymesRecyclerViewAdapter? = null
         set(value) {
             field = value
             recyclerView.adapter = adapter
@@ -89,9 +88,13 @@ class SearchRhymesFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(SearchRhymesViewModel::class.java)
-        viewModel.rhymes.observe(this, Observer { rhymes ->
+        viewModel.rhymeViewModels.observe(this, Observer { rhymes ->
             context?.let { context ->
-                adapter = SearchRhymesAdapter(context, rhymes)
+                adapter =
+                    RhymesRecyclerViewAdapter(
+                        context,
+                        rhymes
+                    )
             }
         })
     }

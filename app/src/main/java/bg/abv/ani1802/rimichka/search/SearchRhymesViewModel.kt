@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import bg.abv.ani1802.rimichka.common.SingleRhymeViewModel
 import bg.abv.ani1802.rimichka.network.Rhyme
 import bg.abv.ani1802.rimichka.network.RimichkaApi
 import retrofit2.Call
@@ -12,8 +13,16 @@ import retrofit2.Response
 
 class SearchRhymesViewModel : ViewModel() {
 
-    private val _rhymes = MutableLiveData<List<Rhyme>>()
-    val rhymes: LiveData<List<Rhyme>> get() = _rhymes
+    private var rhymes: List<Rhyme> = emptyList()
+        set(value) {
+            field = value
+            _rhymeViewModels.value = value.map { rhyme ->
+                SingleRhymeViewModel(rhyme.word) // TODO: save favorite rhymes
+            }
+        }
+
+    private val _rhymeViewModels = MutableLiveData<List<SingleRhymeViewModel>>()
+    val rhymeViewModels: LiveData<List<SingleRhymeViewModel>> get() = _rhymeViewModels
 
     fun fetchRhymesFor(word: String) {
         RimichkaApi.retrofitService.fetchRhymes(word).enqueue(
@@ -24,11 +33,21 @@ class SearchRhymesViewModel : ViewModel() {
                 }
 
                 override fun onResponse(call: Call<List<Rhyme>>, response: Response<List<Rhyme>>) {
-                    _rhymes.value = response.body()?.sortedByDescending { rhyme ->
-                        rhyme.precision
+                    response.body()?.let { fetchedRhymes ->
+                        rhymes = listOfFetchedRhymesSorted(fetchedRhymes, removingWord = word)
+                    } ?: run {
+                        rhymes = emptyList()
                     }
                 }
             }
         )
+    }
+
+    private fun listOfFetchedRhymesSorted(rhymes: List<Rhyme>, removingWord: String?): List<Rhyme> {
+        var result = rhymes.sortedByDescending { rhyme -> rhyme.precision }
+        removingWord?.let { word ->
+            result = result.filter { rhyme -> rhyme.word != word }
+        }
+        return result
     }
 }
