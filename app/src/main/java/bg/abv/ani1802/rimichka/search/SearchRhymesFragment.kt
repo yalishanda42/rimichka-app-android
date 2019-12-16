@@ -4,15 +4,18 @@ import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import bg.abv.ani1802.rimichka.R
+import bg.abv.ani1802.rimichka.common.RhymesRecyclerViewAdapter
 
 class SearchRhymesFragment : Fragment() {
 
@@ -23,10 +26,18 @@ class SearchRhymesFragment : Fragment() {
     private lateinit var viewModel: SearchRhymesViewModel
     private lateinit var searchBar: EditText
     private lateinit var searchButton: Button
+    private lateinit var recyclerView: RecyclerView
+
+    private var adapter: RhymesRecyclerViewAdapter? = null
+        set(value) {
+            field = value
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(context)
+        }
 
     private var lastSearchedWord: String? = null
     private var searchButtonIsHidden: Boolean = true
-        set(value: Boolean) {
+        set(value) {
             field = value
             searchButton.visibility = if (value) View.GONE else View.VISIBLE
         }
@@ -42,8 +53,10 @@ class SearchRhymesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         searchBar = view.findViewById(R.id.search_edit_text)
         searchButton = view.findViewById(R.id.search_button)
+        recyclerView = view.findViewById(R.id.fetched_rhymes_recycler_view)
 
         searchButton.setOnClickListener { _ -> searchWordForRhymes() }
+
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
@@ -75,6 +88,15 @@ class SearchRhymesFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(SearchRhymesViewModel::class.java)
+        viewModel.rhymeViewModels.observe(this, Observer { rhymes ->
+            context?.let { context ->
+                adapter =
+                    RhymesRecyclerViewAdapter(
+                        context,
+                        rhymes
+                    )
+            }
+        })
     }
 
     private fun searchWordForRhymes() {
