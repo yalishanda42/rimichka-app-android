@@ -1,9 +1,8 @@
 package bg.abv.ani1802.rimichka.common
 
-import androidx.lifecycle.MutableLiveData
 import bg.abv.ani1802.rimichka.network.Rhyme
 
-object FavoriteRhymesManager {
+object FavoriteRhymesRepository {
 
     // In-memory list
 

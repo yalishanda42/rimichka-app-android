@@ -1,11 +1,10 @@
 package bg.abv.ani1802.rimichka.search
 
 import android.util.Log
-import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import bg.abv.ani1802.rimichka.common.FavoriteRhymesManager
+import bg.abv.ani1802.rimichka.common.FavoriteRhymesRepository
 import bg.abv.ani1802.rimichka.common.SingleRhymeViewModel
 import bg.abv.ani1802.rimichka.network.Rhyme
 import bg.abv.ani1802.rimichka.network.RimichkaApi
@@ -37,14 +36,14 @@ class SearchRhymesViewModel : ViewModel() {
             field = value
             _rhymeViewModels.value = value.map { rhyme ->
                 val parentWord = searchQuery.value ?: return
-                val isToggled = FavoriteRhymesManager.favoriteRhymesContain(rhyme, parentWord)
+                val isToggled = FavoriteRhymesRepository.favoriteRhymesContain(rhyme, parentWord)
                 SingleRhymeViewModel(
                     rhyme.word,
                     onToggleListener = { shouldBeSaved ->
                         if (shouldBeSaved) {
-                            FavoriteRhymesManager.addFavoriteRhyme(rhyme, parentWord)
+                            FavoriteRhymesRepository.addFavoriteRhyme(rhyme, parentWord)
                         } else {
-                            FavoriteRhymesManager.removeRhymeFromFavorites(rhyme, parentWord)
+                            FavoriteRhymesRepository.removeRhymeFromFavorites(rhyme, parentWord)
                         }
                     }, onClickRhyme = {
                         searchQuery.value = rhyme.word
