@@ -32,10 +32,6 @@ class FavoriteRhymesViewModel : ViewModel(), FavoriteRhymesObserver {
             SingleRhymeViewModel(
                 "${pair.parentWord} -> ${pair.rhyme}",
                 onToggleListener = { shouldBeAdded ->
-                    val rhyme = Rhyme(
-                        pair.rhyme,
-                        pair.precision
-                    )
                     if (shouldBeAdded) {
                         FavoriteRhymesRepository.addFavoriteRhyme(pair)
                     } else {
