@@ -5,16 +5,17 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import bg.abv.ani1802.rimichka.common.models.RhymePair
 
 @Dao
 interface FavoriteRhymesDatabaseDAO {
 
-    @Query("SELECT * FROM favorite_rhymes_table ORDER BY id DESC")
-    fun getAllRhymePairs(): LiveData<List<RhymePairEntity>>
+    @Query("SELECT * FROM favorite_rhymes_table")
+    fun getAllRhymePairs(): LiveData<List<RhymePair>>
 
     @Insert
-    fun insertRhymePair(rhymePair: RhymePairEntity)
+    fun insertRhymePair(rhymePair: RhymePair)
 
     @Delete
-    fun deleteRhymePair(rhymePair: RhymePairEntity)
+    fun deleteRhymePair(rhymePair: RhymePair)
 }

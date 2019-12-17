@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import bg.abv.ani1802.rimichka.common.models.RhymePair
 
-@Database(entities = [RhymePairEntity::class], version = 1, exportSchema = false)
+@Database(entities = [RhymePair::class], version = 2, exportSchema = false)
 abstract class FavoriteRhymesDatabase : RoomDatabase() {
 
     abstract val favoriteRhymesDatabaseDAO: FavoriteRhymesDatabaseDAO

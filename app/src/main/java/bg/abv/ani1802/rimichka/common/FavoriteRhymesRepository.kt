@@ -1,12 +1,11 @@
 package bg.abv.ani1802.rimichka.common
 
 import android.content.Context
+import android.util.Log
 import bg.abv.ani1802.rimichka.common.models.RhymePair
 import bg.abv.ani1802.rimichka.common.models.Rhyme
 import bg.abv.ani1802.rimichka.database.FavoriteRhymesDatabase
-import bg.abv.ani1802.rimichka.database.RhymePairEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 
 object FavoriteRhymesRepository {
 
@@ -17,7 +16,7 @@ object FavoriteRhymesRepository {
 
     // In-memory list
 
-    private var favoriteRhymesSet: MutableSet<RhymePair> = fetchFromLocalDatabase()
+    private var favoriteRhymesSet: MutableSet<RhymePair> = mutableSetOf()
         set(value) {
             field = value
             notifyObservers()
@@ -39,7 +38,9 @@ object FavoriteRhymesRepository {
 
     fun addFavoriteRhyme(rhymePair: RhymePair) {
         favoriteRhymesSet.add(rhymePair)
-        saveRhymePairIntoDatabase(rhymePair)
+        scope.launch {
+            saveRhymePairIntoDatabase(rhymePair)
+        }
         notifyObservers()
     }
 
@@ -50,7 +51,9 @@ object FavoriteRhymesRepository {
 
     fun removeRhymeFromFavorites(rhymePair: RhymePair) {
         favoriteRhymesSet.remove(rhymePair)
-        deleteRhymePairFromDatabase(rhymePair)
+        scope.launch {
+            deleteRhymePairFromDatabase(rhymePair)
+        }
         notifyObservers()
     }
 
@@ -87,7 +90,9 @@ object FavoriteRhymesRepository {
         set(value) {
             field = value
             value?.let {
-                fetchFromLocalDatabase()
+                scope.launch {
+                    favoriteRhymesSet = fetchFromLocalDatabase()
+                }
             }
         }
 
@@ -96,27 +101,28 @@ object FavoriteRhymesRepository {
         database = FavoriteRhymesDatabase.getInstance(context)
     }
 
-    private fun fetchFromLocalDatabase(): MutableSet<RhymePair> {
+    private suspend fun fetchFromLocalDatabase(): MutableSet<RhymePair> {
         val database = database ?: return mutableSetOf()
-        val fetchedEntities = database.favoriteRhymesDatabaseDAO.getAllRhymePairs()
-        val toMutableSet = fetchedEntities.value?.map {
-            RhymePair(it.parentWord, it.rhyme, it.precision)
-        }?.toMutableSet()
-        return if (toMutableSet != null) toMutableSet else mutableSetOf()
+        return withContext(Dispatchers.IO) {
+            val fetchedEntities = database.favoriteRhymesDatabaseDAO.getAllRhymePairs()
+            fetchedEntities.value?.toMutableSet() ?: mutableSetOf<RhymePair>()
+        }
     }
 
-    private fun saveRhymePairIntoDatabase(rhymePair: RhymePair) {
+    private suspend fun saveRhymePairIntoDatabase(rhymePair: RhymePair) {
         val database = database ?: return
-        val newEntity = RhymePairEntity(
-            parentWord = rhymePair.parentWord,
-            rhyme = rhymePair.rhyme,
-            precision = rhymePair.precision
-        )
-        database.favoriteRhymesDatabaseDAO.insertRhymePair(newEntity)
+        withContext(Dispatchers.IO) {
+            database.favoriteRhymesDatabaseDAO.insertRhymePair(rhymePair)
+            val test = database.favoriteRhymesDatabaseDAO
+                .getAllRhymePairs()
+            Log.e("test", test.value.toString())
+        }
     }
 
-    private fun deleteRhymePairFromDatabase(rhymePair: RhymePairEntity) {
+    private suspend fun deleteRhymePairFromDatabase(rhymePair: RhymePair) {
         val database = database ?: return
-
+        withContext(Dispatchers.IO) {
+            database.favoriteRhymesDatabaseDAO.deleteRhymePair(rhymePair)
+        }
     }
 }
