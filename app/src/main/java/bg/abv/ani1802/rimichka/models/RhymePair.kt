@@ -1,6 +1,4 @@
-package bg.abv.ani1802.rimichka.common
-
-import bg.abv.ani1802.rimichka.network.Rhyme
+package bg.abv.ani1802.rimichka.models
 
 data class RhymePair(
     val parentWord: String,

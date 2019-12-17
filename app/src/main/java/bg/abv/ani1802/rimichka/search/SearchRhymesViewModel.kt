@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import bg.abv.ani1802.rimichka.common.FavoriteRhymesRepository
 import bg.abv.ani1802.rimichka.common.SingleRhymeViewModel
-import bg.abv.ani1802.rimichka.network.Rhyme
+import bg.abv.ani1802.rimichka.models.Rhyme
 import bg.abv.ani1802.rimichka.network.RimichkaApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

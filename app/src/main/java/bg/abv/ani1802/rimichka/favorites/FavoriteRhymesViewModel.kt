@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import bg.abv.ani1802.rimichka.common.FavoriteRhymesRepository
 import bg.abv.ani1802.rimichka.common.FavoriteRhymesObserver
-import bg.abv.ani1802.rimichka.common.RhymePair
+import bg.abv.ani1802.rimichka.models.RhymePair
 import bg.abv.ani1802.rimichka.common.SingleRhymeViewModel
-import bg.abv.ani1802.rimichka.network.Rhyme
+import bg.abv.ani1802.rimichka.models.Rhyme
 
 class FavoriteRhymesViewModel : ViewModel(), FavoriteRhymesObserver {
 
@@ -32,7 +32,10 @@ class FavoriteRhymesViewModel : ViewModel(), FavoriteRhymesObserver {
             SingleRhymeViewModel(
                 "${pair.parentWord} -> ${pair.rhyme}",
                 onToggleListener = { shouldBeAdded ->
-                    val rhyme = Rhyme(pair.rhyme, pair.precision)
+                    val rhyme = Rhyme(
+                        pair.rhyme,
+                        pair.precision
+                    )
                     if (shouldBeAdded) {
                         FavoriteRhymesRepository.addFavoriteRhyme(pair)
                     } else {

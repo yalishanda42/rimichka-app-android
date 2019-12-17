@@ -1,4 +1,4 @@
-package bg.abv.ani1802.rimichka.network
+package bg.abv.ani1802.rimichka.models
 
 import com.squareup.moshi.Json
 
