@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 
 class SingleRhymeViewModel(
     val displayedText: String,
-    val onToggleListener: (Boolean) -> Unit
+    val onToggleListener: (Boolean) -> Unit,
+    val onClickRhyme: () -> Unit
 ) : ViewModel() {
 
     val isMarked: ObservableBoolean = ObservableBoolean(false)
@@ -13,5 +14,9 @@ class SingleRhymeViewModel(
     fun toggle() {
         isMarked.set(!isMarked.get())
         onToggleListener(isMarked.get())
+    }
+
+    fun onClick() {
+        onClickRhyme()
     }
 }

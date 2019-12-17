@@ -21,6 +21,8 @@ class FavoriteRhymesViewModel : ViewModel(), FavoriteRhymesObserver {
     val favoriteRhymesViewModels: LiveData<List<SingleRhymeViewModel>>
         get() = _favoriteRhymesViewModels
 
+    var onClickRhymeListener: ((String) -> Unit)? = null
+
     override fun onFavoriteRhymesUpdate(newList: List<RhymePair>) {
         _favoriteRhymesViewModels.value = convertRhymePairsToViewModels(newList)
     }
@@ -28,15 +30,18 @@ class FavoriteRhymesViewModel : ViewModel(), FavoriteRhymesObserver {
     private fun convertRhymePairsToViewModels(pairs: List<RhymePair>): List<SingleRhymeViewModel> {
         return pairs.map { pair ->
             SingleRhymeViewModel(
-                "${pair.parentWord} -> ${pair.rhyme}"
-            ) { shouldBeAdded ->
-                val rhyme = Rhyme(pair.rhyme, pair.precision)
-                if (shouldBeAdded) {
-                    FavoriteRhymesManager.addFavoriteRhyme(pair)
-                } else {
-                    FavoriteRhymesManager.removeRhymeFromFavorites(pair)
+                "${pair.parentWord} -> ${pair.rhyme}",
+                onToggleListener = { shouldBeAdded ->
+                    val rhyme = Rhyme(pair.rhyme, pair.precision)
+                    if (shouldBeAdded) {
+                        FavoriteRhymesManager.addFavoriteRhyme(pair)
+                    } else {
+                        FavoriteRhymesManager.removeRhymeFromFavorites(pair)
+                    }
+                }, onClickRhyme = {
+                    onClickRhymeListener?.invoke(pair.parentWord)
                 }
-            }.apply {
+            ).apply {
                 isMarked.set(true)
             }
         }

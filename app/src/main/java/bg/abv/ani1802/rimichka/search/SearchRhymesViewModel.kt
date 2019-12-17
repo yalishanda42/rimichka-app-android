@@ -38,13 +38,18 @@ class SearchRhymesViewModel : ViewModel() {
             _rhymeViewModels.value = value.map { rhyme ->
                 val parentWord = searchQuery.value ?: return
                 val isToggled = FavoriteRhymesManager.favoriteRhymesContain(rhyme, parentWord)
-                SingleRhymeViewModel(rhyme.word) { shouldBeSaved ->
-                    if (shouldBeSaved) {
-                        FavoriteRhymesManager.addFavoriteRhyme(rhyme, parentWord)
-                    } else {
-                        FavoriteRhymesManager.removeRhymeFromFavorites(rhyme, parentWord)
-                    }
-                }.apply {
+                SingleRhymeViewModel(
+                    rhyme.word,
+                    onToggleListener = { shouldBeSaved ->
+                        if (shouldBeSaved) {
+                            FavoriteRhymesManager.addFavoriteRhyme(rhyme, parentWord)
+                        } else {
+                            FavoriteRhymesManager.removeRhymeFromFavorites(rhyme, parentWord)
+                        }
+                    }, onClickRhyme = {
+                        searchQuery.value = rhyme.word
+                        fetchRhymes()
+                }).apply {
                     isMarked.set(isToggled)
                 }
             }

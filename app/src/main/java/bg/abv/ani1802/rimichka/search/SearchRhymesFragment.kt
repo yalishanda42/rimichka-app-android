@@ -14,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bg.abv.ani1802.rimichka.R
@@ -24,6 +25,7 @@ class SearchRhymesFragment : Fragment() {
 
     companion object {
         fun newInstance() = SearchRhymesFragment()
+        const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
     }
 
     private lateinit var binding: SearchRhymesFragmentBinding
@@ -81,6 +83,13 @@ class SearchRhymesFragment : Fragment() {
         viewModel.searchQuery.observe(this, Observer {
             viewModel.onSearchQueryChanged()
         })
+
+        arguments?.let { bundle ->
+            bundle.getString(SEARCH_QUERY_KEY)?.let { query ->
+                viewModel.searchQuery.value = query
+                onTapSearchButton()
+            }
+        }
     }
 
     private fun onTapSearchButton() {

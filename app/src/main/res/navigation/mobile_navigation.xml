@@ -9,11 +9,24 @@
         android:id="@+id/navigation_search"
         android:name="bg.abv.ani1802.rimichka.search.SearchRhymesFragment"
         android:label="@string/title_search"
-        tools:layout="@layout/search_rhymes_fragment" />
+        tools:layout="@layout/search_rhymes_fragment" >
+        <argument
+            android:name="searchQuery"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_favorites"
         android:name="bg.abv.ani1802.rimichka.favorites.FavoriteRhymesFragment"
         android:label="@string/title_favorites"
-        tools:layout="@layout/favorite_rhymes_fragment" />
+        tools:layout="@layout/favorite_rhymes_fragment" >
+        <action
+            android:id="@+id/action_navigation_favorites_to_navigation_search"
+            app:destination="@id/navigation_search"
+            app:popUpTo="@+id/navigation_search" >
+            <argument
+                android:name="searchQuery"
+                app:argType="string" />
+        </action>
+    </fragment>
 </navigation>
