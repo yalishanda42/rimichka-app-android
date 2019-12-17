@@ -5,6 +5,7 @@ import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import bg.abv.ani1802.rimichka.common.FavoriteRhymesManager
 import bg.abv.ani1802.rimichka.common.SingleRhymeViewModel
 import bg.abv.ani1802.rimichka.network.Rhyme
 import bg.abv.ani1802.rimichka.network.RimichkaApi
@@ -35,7 +36,17 @@ class SearchRhymesViewModel : ViewModel() {
         set(value) {
             field = value
             _rhymeViewModels.value = value.map { rhyme ->
-                SingleRhymeViewModel(rhyme.word) // TODO: save favorite rhymes
+                val parentWord = searchQuery.value ?: return
+                val isToggled = FavoriteRhymesManager.favoriteRhymesContain(rhyme, parentWord)
+                SingleRhymeViewModel(rhyme.word) { shouldBeSaved ->
+                    if (shouldBeSaved) {
+                        FavoriteRhymesManager.addFavoriteRhyme(rhyme, parentWord)
+                    } else {
+                        FavoriteRhymesManager.removeRhymeFromFavorites(rhyme, parentWord)
+                    }
+                }.apply {
+                    isMarked.set(isToggled)
+                }
             }
         }
 
