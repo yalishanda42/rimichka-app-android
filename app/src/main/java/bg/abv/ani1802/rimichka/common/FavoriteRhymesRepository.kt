@@ -1,9 +1,19 @@
 package bg.abv.ani1802.rimichka.common
 
+import android.content.Context
 import bg.abv.ani1802.rimichka.common.models.RhymePair
 import bg.abv.ani1802.rimichka.common.models.Rhyme
+import bg.abv.ani1802.rimichka.database.FavoriteRhymesDatabase
+import bg.abv.ani1802.rimichka.database.RhymePairEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
 object FavoriteRhymesRepository {
+
+    // Coroutines
+
+    private val job = Job()
+    private val scope = CoroutineScope(job)
 
     // In-memory list
 
@@ -62,17 +72,51 @@ object FavoriteRhymesRepository {
         }
     }
 
-    // Database helpers
+    // Database
+
+    //
+    var context: Context? = null
+        set(value) {
+            field = value
+            context?.let {
+                getDatabaseInstance()
+            }
+        }
+
+    private var database: FavoriteRhymesDatabase? = null
+        set(value) {
+            field = value
+            value?.let {
+                fetchFromLocalDatabase()
+            }
+        }
+
+    private fun getDatabaseInstance() {
+        val context = context ?: return
+        database = FavoriteRhymesDatabase.getInstance(context)
+    }
 
     private fun fetchFromLocalDatabase(): MutableSet<RhymePair> {
-        return mutableSetOf() // TODO: Implement persistence
+        val database = database ?: return mutableSetOf()
+        val fetchedEntities = database.favoriteRhymesDatabaseDAO.getAllRhymePairs()
+        val toMutableSet = fetchedEntities.value?.map {
+            RhymePair(it.parentWord, it.rhyme, it.precision)
+        }?.toMutableSet()
+        return if (toMutableSet != null) toMutableSet else mutableSetOf()
     }
 
     private fun saveRhymePairIntoDatabase(rhymePair: RhymePair) {
-        // TODO: Implement persistence
+        val database = database ?: return
+        val newEntity = RhymePairEntity(
+            parentWord = rhymePair.parentWord,
+            rhyme = rhymePair.rhyme,
+            precision = rhymePair.precision
+        )
+        database.favoriteRhymesDatabaseDAO.insertRhymePair(newEntity)
     }
 
-    private fun deleteRhymePairFromDatabase(rhymePair: RhymePair) {
-        // TODO: Implement persistence
+    private fun deleteRhymePairFromDatabase(rhymePair: RhymePairEntity) {
+        val database = database ?: return
+
     }
 }
