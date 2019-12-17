@@ -1,27 +1,68 @@
 package bg.abv.ani1802.rimichka.common
 
+import androidx.lifecycle.MutableLiveData
 import bg.abv.ani1802.rimichka.network.Rhyme
 
 object FavoriteRhymesManager {
 
-    private var favoriteRhymes: MutableSet<RhymePair> = fetchFromLocalDatabase()
+    // In-memory list
+
+    private var favoriteRhymesSet: MutableSet<RhymePair> = fetchFromLocalDatabase()
+        set(value) {
+            field = value
+            notifyObservers()
+        }
+
+    fun getAllFavoriteRhymes(): List<RhymePair> {
+        return favoriteRhymesSet.toList()
+    }
 
     fun favoriteRhymesContain(rhyme: Rhyme, parentWord: String): Boolean {
         val pair = RhymePair(parentWord, rhyme)
-        return favoriteRhymes.contains(pair)
+        return favoriteRhymesSet.contains(pair)
     }
 
     fun addFavoriteRhyme(rhyme: Rhyme, parentWord: String) {
         val pair = RhymePair(parentWord, rhyme)
-        favoriteRhymes.add(pair)
-        saveRhymePairIntoDatabase(pair)
+        addFavoriteRhyme(pair)
+    }
+
+    fun addFavoriteRhyme(rhymePair: RhymePair) {
+        favoriteRhymesSet.add(rhymePair)
+        saveRhymePairIntoDatabase(rhymePair)
+        notifyObservers()
     }
 
     fun removeRhymeFromFavorites(rhyme: Rhyme, parentWord: String) {
         val pair = RhymePair(parentWord, rhyme)
-        favoriteRhymes.remove(pair)
-        deleteRhymePairFromDatabase(pair)
+        removeRhymeFromFavorites(pair)
     }
+
+    fun removeRhymeFromFavorites(rhymePair: RhymePair) {
+        favoriteRhymesSet.remove(rhymePair)
+        deleteRhymePairFromDatabase(rhymePair)
+        notifyObservers()
+    }
+
+    // Observers
+
+    private var observers: MutableList<FavoriteRhymesObserver> = mutableListOf()
+
+    fun addObserver(observer: FavoriteRhymesObserver) {
+        observers.add(observer)
+    }
+
+    fun removeObserver(observer: FavoriteRhymesObserver) {
+        observers.remove(observer)
+    }
+
+    private fun notifyObservers() {
+        for (observer in observers) {
+            observer.onFavoriteRhymesUpdate(favoriteRhymesSet.toList())
+        }
+    }
+
+    // Database helpers
 
     private fun fetchFromLocalDatabase(): MutableSet<RhymePair> {
         return mutableSetOf() // TODO: Implement persistence
