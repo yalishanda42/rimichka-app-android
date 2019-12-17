@@ -1,7 +1,7 @@
 package bg.abv.ani1802.rimichka.common
 
-import bg.abv.ani1802.rimichka.models.RhymePair
-import bg.abv.ani1802.rimichka.models.Rhyme
+import bg.abv.ani1802.rimichka.common.models.RhymePair
+import bg.abv.ani1802.rimichka.common.models.Rhyme
 
 object FavoriteRhymesRepository {
 

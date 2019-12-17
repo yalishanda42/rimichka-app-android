@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import bg.abv.ani1802.rimichka.common.FavoriteRhymesRepository
 import bg.abv.ani1802.rimichka.common.FavoriteRhymesObserver
-import bg.abv.ani1802.rimichka.models.RhymePair
+import bg.abv.ani1802.rimichka.common.models.RhymePair
 import bg.abv.ani1802.rimichka.common.SingleRhymeViewModel
-import bg.abv.ani1802.rimichka.models.Rhyme
+import bg.abv.ani1802.rimichka.common.models.Rhyme
 
 class FavoriteRhymesViewModel : ViewModel(), FavoriteRhymesObserver {
 
