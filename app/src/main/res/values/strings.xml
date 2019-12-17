@@ -5,4 +5,6 @@
     <string name="search_hint">Въведи дума на кирилица…</string>
     <string name="search_button_text">Римувай ме!</string>
     <string name="save_fav_rhyme">Съхрани любима рима</string>
+    <string name="no_results_text">Няма резултати. :(</string>
+    <string name="loading_failed_text">Май няма интернет?</string>
 </resources>
