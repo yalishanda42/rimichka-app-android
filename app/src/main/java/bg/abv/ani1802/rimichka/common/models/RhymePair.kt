@@ -1,6 +1,5 @@
 package bg.abv.ani1802.rimichka.common.models
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 @Entity(primaryKeys = ["parentWord", "rhyme"], tableName = "favorite_rhymes_table")

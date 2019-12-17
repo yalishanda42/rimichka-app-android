@@ -77,7 +77,7 @@ object FavoriteRhymesRepository {
 
     // Database
 
-    //
+    // Need to be set from activity order to retrieve database.
     var context: Context? = null
         set(value) {
             field = value
@@ -104,8 +104,7 @@ object FavoriteRhymesRepository {
     private suspend fun fetchFromLocalDatabase(): MutableSet<RhymePair> {
         val database = database ?: return mutableSetOf()
         return withContext(Dispatchers.IO) {
-            val fetchedEntities = database.favoriteRhymesDatabaseDAO.getAllRhymePairs()
-            fetchedEntities.value?.toMutableSet() ?: mutableSetOf<RhymePair>()
+            database.favoriteRhymesDatabaseDAO.getAllRhymePairs().toMutableSet()
         }
     }
 
@@ -113,9 +112,6 @@ object FavoriteRhymesRepository {
         val database = database ?: return
         withContext(Dispatchers.IO) {
             database.favoriteRhymesDatabaseDAO.insertRhymePair(rhymePair)
-            val test = database.favoriteRhymesDatabaseDAO
-                .getAllRhymePairs()
-            Log.e("test", test.value.toString())
         }
     }
 

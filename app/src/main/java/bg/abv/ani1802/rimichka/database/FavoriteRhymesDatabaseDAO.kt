@@ -11,7 +11,7 @@ import bg.abv.ani1802.rimichka.common.models.RhymePair
 interface FavoriteRhymesDatabaseDAO {
 
     @Query("SELECT * FROM favorite_rhymes_table")
-    fun getAllRhymePairs(): LiveData<List<RhymePair>>
+    fun getAllRhymePairs(): List<RhymePair>
 
     @Insert
     fun insertRhymePair(rhymePair: RhymePair)
