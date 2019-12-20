@@ -25,7 +25,7 @@ object RimichkaRepository {
         logTag: String = this::class.java.toString()
     ) : Pair<List<Rhyme>, Boolean> {
 
-        val fetchRhymesDeferred = RimichkaApi.retrofitService.fetchRhymesAsync(word)
+        val fetchRhymesDeferred = RimichkaApi.service.fetchRhymesAsync(word)
 
         return try {
             val listResult = fetchRhymesDeferred.await()

@@ -17,7 +17,7 @@ object RimichkaApi {
         .baseUrl(BASE_URL)
         .build()
 
-    val retrofitService : RimichkaApiService by lazy {
+    val service : RimichkaApiService by lazy {
         retrofit.create(RimichkaApiService::class.java)
     }
 }
