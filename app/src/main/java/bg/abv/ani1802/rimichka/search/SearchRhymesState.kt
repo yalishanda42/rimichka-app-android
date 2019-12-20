@@ -1,6 +1,6 @@
 package bg.abv.ani1802.rimichka.search
 
-enum class SearchRhymesStateEnum {
+enum class SearchRhymesState {
     INITIAL,
     LOADING,
     NO_RESULTS,

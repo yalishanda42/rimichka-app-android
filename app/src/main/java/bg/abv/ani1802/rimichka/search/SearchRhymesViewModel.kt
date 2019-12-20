@@ -25,8 +25,8 @@ class SearchRhymesViewModel : ViewModel() {
     private val _rhymeViewModels = MutableLiveData<List<SingleRhymeViewModel>>()
     val rhymeViewModels: LiveData<List<SingleRhymeViewModel>> get() = _rhymeViewModels
 
-    private val _state = MutableLiveData<SearchRhymesStateEnum>(SearchRhymesStateEnum.INITIAL)
-    val state: LiveData<SearchRhymesStateEnum> get() = _state
+    private val _state = MutableLiveData<SearchRhymesState>(SearchRhymesState.INITIAL)
+    val state: LiveData<SearchRhymesState> get() = _state
 
     // Data
 
@@ -62,19 +62,19 @@ class SearchRhymesViewModel : ViewModel() {
         searchQuery.value?.let { word ->
             _searchButtonIsEnabled.value = false
             previousSearchQuery = word
-            _state.value = SearchRhymesStateEnum.LOADING
+            _state.value = SearchRhymesState.LOADING
             coroutineScope.launch {
                 val (fetchedList, wasSuccessful) = RimichkaRepository.fetchRhymesFor(word, logTag)
                 rhymes = listOfFetchedRhymesSorted(fetchedList, removingWord = word)
 
                 if (wasSuccessful) {
                     _state.value = if (rhymes.count() == 0) {
-                        SearchRhymesStateEnum.NO_RESULTS
+                        SearchRhymesState.NO_RESULTS
                     } else {
-                        SearchRhymesStateEnum.HAS_RESULTS
+                        SearchRhymesState.HAS_RESULTS
                     }
                 } else {
-                    _state.value = SearchRhymesStateEnum.LOADING_FAILED
+                    _state.value = SearchRhymesState.LOADING_FAILED
                 }
             }
         }

@@ -7,7 +7,7 @@
 
         <import type="android.view.View" />
 
-        <import type="bg.abv.ani1802.rimichka.search.SearchRhymesStateEnum" />
+        <import type="bg.abv.ani1802.rimichka.search.SearchRhymesState" />
 
         <variable
             name="viewModel"
@@ -58,7 +58,7 @@
                     android:id="@+id/fetched_rhymes_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="@{viewModel.state == SearchRhymesStateEnum.HAS_RESULTS ? View.VISIBLE : View.GONE}" />
+                    android:visibility="@{viewModel.state == SearchRhymesState.HAS_RESULTS}" />
 
                 <com.github.ybq.android.spinkit.SpinKitView
                     android:id="@+id/loading_spinner"
@@ -66,7 +66,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:visibility="@{viewModel.state == SearchRhymesStateEnum.LOADING ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{viewModel.state == SearchRhymesState.LOADING}"
                     app:SpinKit_Color="@color/colorPrimary" />
 
                 <TextView
@@ -75,7 +75,7 @@
                     android:text="@string/no_results_text"
                     android:layout_gravity="center"
                     android:textColor="@color/colorPrimary"
-                    android:visibility="@{viewModel.state == SearchRhymesStateEnum.NO_RESULTS ? View.VISIBLE : View.GONE}"/>
+                    android:visibility="@{viewModel.state == SearchRhymesState.NO_RESULTS}"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                     android:text="@string/loading_failed_text"
                     android:layout_gravity="center"
                     android:textColor="@color/colorPrimary"
-                    android:visibility="@{viewModel.state == SearchRhymesStateEnum.LOADING_FAILED ? View.VISIBLE : View.GONE}" />
+                    android:visibility="@{viewModel.state == SearchRhymesState.LOADING_FAILED}" />
             </LinearLayout>
 
             <Button
@@ -93,7 +93,7 @@
                 android:background="@android:color/transparent"
                 android:text="@string/search_button_text"
                 android:textColor="@color/colorPrimary"
-                android:visibility="@{viewModel.searchButtonIsEnabled ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.searchButtonIsEnabled}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/search_edit_text" />
