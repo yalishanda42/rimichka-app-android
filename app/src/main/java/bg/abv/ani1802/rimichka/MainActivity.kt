@@ -5,7 +5,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
-import bg.abv.ani1802.rimichka.common.FavoriteRhymesRepository
+import bg.abv.ani1802.rimichka.repository.RimichkaRepository
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,6 +17,6 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         navView.setupWithNavController(navController)
 
-        FavoriteRhymesRepository.context = applicationContext
+        RimichkaRepository.context = applicationContext
     }
 }

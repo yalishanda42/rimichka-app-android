@@ -1,18 +1,48 @@
-package bg.abv.ani1802.rimichka.common
+package bg.abv.ani1802.rimichka.repository
 
 import android.content.Context
 import android.util.Log
 import bg.abv.ani1802.rimichka.common.models.RhymePair
 import bg.abv.ani1802.rimichka.common.models.Rhyme
 import bg.abv.ani1802.rimichka.database.FavoriteRhymesDatabase
+import bg.abv.ani1802.rimichka.network.RimichkaApi
 import kotlinx.coroutines.*
 
-object FavoriteRhymesRepository {
+object RimichkaRepository {
 
-    // Coroutines
+    // Network fetch
 
-    private val job = Job()
-    private val scope = CoroutineScope(job)
+    /**
+     * Fetches rhymes for a given word using the Rimichka.com API.
+     *
+     * @param word The word to be rhymed.
+     * @param logTag (optional) The logger tag to be used on fetch success/fail.
+     * @return A pair containing the returned [List] of [Rhyme] objects and a [Boolean] indicating
+     * whether the API call was successful or not. If it was not, an empty [List] is returned.
+     */
+    suspend fun fetchRhymesFor(
+        word: String,
+        logTag: String = this::class.java.toString()
+    ) : Pair<List<Rhyme>, Boolean> {
+
+        val fetchRhymesDeferred = RimichkaApi.retrofitService.fetchRhymesAsync(word)
+
+        return try {
+            val listResult = fetchRhymesDeferred.await()
+
+            Log.d(
+                logTag,
+                "Successfully fetched ${listResult.count()} rhymes for the word '${word}'."
+            )
+
+            Pair(listResult, true)
+
+        } catch (e: Exception) {
+            Log.e(logTag, "Failed to fetch rhymes (exception: ${e.message})")
+
+            Pair(emptyList<Rhyme>(), false)
+        }
+    }
 
     // In-memory list
 
@@ -31,29 +61,25 @@ object FavoriteRhymesRepository {
         return favoriteRhymesSet.contains(pair)
     }
 
-    fun addFavoriteRhyme(rhyme: Rhyme, parentWord: String) {
+    suspend fun addFavoriteRhyme(rhyme: Rhyme, parentWord: String) {
         val pair = RhymePair(parentWord, rhyme)
         addFavoriteRhyme(pair)
     }
 
-    fun addFavoriteRhyme(rhymePair: RhymePair) {
+    suspend fun addFavoriteRhyme(rhymePair: RhymePair) {
         favoriteRhymesSet.add(rhymePair)
-        scope.launch {
-            saveRhymePairIntoDatabase(rhymePair)
-        }
+        saveRhymePairIntoDatabase(rhymePair)
         notifyObservers()
     }
 
-    fun removeRhymeFromFavorites(rhyme: Rhyme, parentWord: String) {
+    suspend fun removeRhymeFromFavorites(rhyme: Rhyme, parentWord: String) {
         val pair = RhymePair(parentWord, rhyme)
         removeRhymeFromFavorites(pair)
     }
 
-    fun removeRhymeFromFavorites(rhymePair: RhymePair) {
+    suspend fun removeRhymeFromFavorites(rhymePair: RhymePair) {
         favoriteRhymesSet.remove(rhymePair)
-        scope.launch {
-            deleteRhymePairFromDatabase(rhymePair)
-        }
+        deleteRhymePairFromDatabase(rhymePair)
         notifyObservers()
     }
 
@@ -61,10 +87,16 @@ object FavoriteRhymesRepository {
 
     private var observers: MutableList<FavoriteRhymesObserver> = mutableListOf()
 
+    /**
+     * Subscribe to changes in the favorite rhymes.
+     */
     fun addObserver(observer: FavoriteRhymesObserver) {
         observers.add(observer)
     }
 
+    /**
+     * Unsubscribe to changes in the favorite rhymes.
+     */
     fun removeObserver(observer: FavoriteRhymesObserver) {
         observers.remove(observer)
     }
@@ -77,7 +109,10 @@ object FavoriteRhymesRepository {
 
     // Database
 
-    // Need to be set from activity order to retrieve database.
+    /**
+     * Set the application context in order to retrieve the database.
+     * This  needs to be set from an Android context-aware class such as MainActivity for example.
+     */
     var context: Context? = null
         set(value) {
             field = value
@@ -87,23 +122,18 @@ object FavoriteRhymesRepository {
         }
 
     private var database: FavoriteRhymesDatabase? = null
-        set(value) {
-            field = value
-            value?.let {
-                scope.launch {
-                    favoriteRhymesSet = fetchFromLocalDatabase()
-                }
-            }
-        }
 
     private fun getDatabaseInstance() {
         val context = context ?: return
         database = FavoriteRhymesDatabase.getInstance(context)
     }
 
-    private suspend fun fetchFromLocalDatabase(): MutableSet<RhymePair> {
-        val database = database ?: return mutableSetOf()
-        return withContext(Dispatchers.IO) {
+    /**
+     * Fetch all saved favorite rhymes in the database.
+     */
+    suspend fun refreshRhymesFromLocalDatabase() {
+        val database = database ?: return
+        favoriteRhymesSet = withContext(Dispatchers.IO) {
             database.favoriteRhymesDatabaseDAO.getAllRhymePairs().toMutableSet()
         }
     }

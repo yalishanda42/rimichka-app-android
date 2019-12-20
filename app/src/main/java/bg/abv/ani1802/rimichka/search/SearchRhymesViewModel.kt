@@ -1,13 +1,11 @@
 package bg.abv.ani1802.rimichka.search
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import bg.abv.ani1802.rimichka.common.FavoriteRhymesRepository
 import bg.abv.ani1802.rimichka.common.SingleRhymeViewModel
 import bg.abv.ani1802.rimichka.common.models.Rhyme
-import bg.abv.ani1802.rimichka.network.RimichkaApi
+import bg.abv.ani1802.rimichka.repository.RimichkaRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,7 +17,7 @@ class SearchRhymesViewModel : ViewModel() {
 
     // Bindings
 
-    val searchQuery = MutableLiveData<String>()
+    val searchQuery = MutableLiveData<String>()  // Two-way binding
 
     private val _searchButtonIsEnabled = MutableLiveData<Boolean>(false)
     val searchButtonIsEnabled: LiveData<Boolean> get() = _searchButtonIsEnabled
@@ -39,15 +37,11 @@ class SearchRhymesViewModel : ViewModel() {
             field = value
             _rhymeViewModels.value = value.map { rhyme ->
                 val parentWord = searchQuery.value ?: return
-                val isToggled = FavoriteRhymesRepository.favoriteRhymesContain(rhyme, parentWord)
+                val isToggled = RimichkaRepository.favoriteRhymesContain(rhyme, parentWord)
                 SingleRhymeViewModel(
                     rhyme.word,
                     onToggleListener = { shouldBeSaved ->
-                        if (shouldBeSaved) {
-                            FavoriteRhymesRepository.addFavoriteRhyme(rhyme, parentWord)
-                        } else {
-                            FavoriteRhymesRepository.removeRhymeFromFavorites(rhyme, parentWord)
-                        }
+                        onToggleFavoriteRhyme(rhyme, parentWord, shouldBeSaved)
                     }, onClickRhyme = {
                         searchQuery.value = rhyme.word
                         fetchRhymes()
@@ -70,26 +64,16 @@ class SearchRhymesViewModel : ViewModel() {
             previousSearchQuery = word
             _state.value = SearchRhymesStateEnum.LOADING
             coroutineScope.launch {
-                val fetchRhymesDeferred = RimichkaApi.retrofitService.fetchRhymesAsync(word)
-                try {
+                val (fetchedList, wasSuccessful) = RimichkaRepository.fetchRhymesFor(word, logTag)
+                rhymes = listOfFetchedRhymesSorted(fetchedList, removingWord = word)
 
-                    val listResult = fetchRhymesDeferred.await()
-
-                    Log.d(
-                        logTag,
-                        "Successfully fetched ${listResult.count()} rhymes for the word '${word}'."
-                    )
-
-                    rhymes = listOfFetchedRhymesSorted(listResult, removingWord = word)
-
+                if (wasSuccessful) {
                     _state.value = if (rhymes.count() == 0) {
                         SearchRhymesStateEnum.NO_RESULTS
                     } else {
                         SearchRhymesStateEnum.HAS_RESULTS
                     }
-
-                } catch (e: Exception) {
-                    Log.e(logTag, "Failed to fetch rhymes (${e.message})")
+                } else {
                     _state.value = SearchRhymesStateEnum.LOADING_FAILED
                 }
             }
@@ -114,6 +98,22 @@ class SearchRhymesViewModel : ViewModel() {
 
         } ?: run {
             _searchButtonIsEnabled.value = false
+        }
+    }
+
+    private fun onToggleFavoriteRhyme(
+        rhyme: Rhyme,
+        withParentWord: String,
+        shouldBeSavedToFavorites: Boolean
+    ) {
+        if (shouldBeSavedToFavorites) {
+            coroutineScope.launch {
+                RimichkaRepository.addFavoriteRhyme(rhyme, withParentWord)
+            }
+        } else {
+            coroutineScope.launch {
+                RimichkaRepository.removeRhymeFromFavorites(rhyme, withParentWord)
+            }
         }
     }
 
