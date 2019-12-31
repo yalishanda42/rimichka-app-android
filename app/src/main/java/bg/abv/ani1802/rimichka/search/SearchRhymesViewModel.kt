@@ -101,6 +101,12 @@ class SearchRhymesViewModel : ViewModel() {
         }
     }
 
+    var onTapInfoButtonListener: (() -> Unit)? = null
+
+    fun onTapInfoButton() {
+        onTapInfoButtonListener?.invoke()
+    }
+
     private fun onToggleFavoriteRhyme(
         rhyme: Rhyme,
         withParentWord: String,

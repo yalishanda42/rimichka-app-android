@@ -8,4 +8,7 @@
     <string name="no_results_text">Е, това вече не мога да го римувам. :(</string>
     <string name="loading_failed_text">Или няма рима, или няма интернет.</string>
     <string name="app_information">Информация за приложението</string>
+    <string name="about_app_title">За приложението:</string>
+    <string name="https_rimichka_com">Това приложение представлява мобилна версия на сайта https://rimichka.com</string>
+    <string name="app_logo">Лого на приложението</string>
 </resources>

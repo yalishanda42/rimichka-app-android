@@ -13,6 +13,9 @@
         <argument
             android:name="searchQuery"
             app:argType="string" />
+        <action
+            android:id="@+id/action_navigation_search_to_aboutFragment"
+            app:destination="@id/navigation_about" />
     </fragment>
 
     <fragment
@@ -29,4 +32,9 @@
                 app:argType="string" />
         </action>
     </fragment>
+    <fragment
+        android:id="@+id/navigation_about"
+        android:name="bg.abv.ani1802.rimichka.about.AboutFragment"
+        android:label="about_fragment"
+        tools:layout="@layout/about_fragment" />
 </navigation>

@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bg.abv.ani1802.rimichka.R
@@ -81,6 +82,9 @@ class SearchRhymesFragment : Fragment() {
         viewModel.searchQuery.observe(this, Observer {
             viewModel.onSearchQueryChanged()
         })
+        viewModel.onTapInfoButtonListener = {
+            findNavController().navigate(R.id.action_navigation_search_to_aboutFragment)
+        }
 
         arguments?.let { bundle ->
             bundle.getString(SEARCH_QUERY_KEY)?.let { query ->
