@@ -7,4 +7,5 @@
     <string name="save_fav_rhyme">Съхрани любима рима</string>
     <string name="no_results_text">Е, това вече не мога да го римувам. :(</string>
     <string name="loading_failed_text">Или няма рима, или няма интернет.</string>
+    <string name="app_information">Информация за приложението</string>
 </resources>
