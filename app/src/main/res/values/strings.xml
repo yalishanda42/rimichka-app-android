@@ -9,6 +9,6 @@
     <string name="loading_failed_text">Или няма рима, или няма интернет.</string>
     <string name="app_information">Информация за приложението</string>
     <string name="about_app_title">За приложението:</string>
-    <string name="https_rimichka_com">Това приложение представлява мобилна версия на сайта https://rimichka.com</string>
+    <string name="https_rimichka_com">Това приложение дава достъп до функционалността на сайта rimichka.com с възможност за локално запазване на любими намерени рими.\n\nИмейл адрес на създателя: yalishanda@abv.bg</string>
     <string name="app_logo">Лого на приложението</string>
 </resources>
